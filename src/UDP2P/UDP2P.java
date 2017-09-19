@@ -16,8 +16,8 @@ public class UDP2P {
     
    public static void main(String[] args) throws IOException {
     startServer();
-    //startCliente(args[0]); //args[0] ip de destino
-       startCliente("127.0.0.1");
+    startCliente(args[0]); //args[0] ip de destino
+     //  startCliente("127.0.0.1");
   }//main
   
    public static void startCliente(String ip_dest) throws UnknownHostException{
