@@ -22,7 +22,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
     private static InetAddress group;
     private ListenerThread listener;
     private static String ip;
-    private static String porta;
+    private static int porta;
     
     
     /**
@@ -30,20 +30,10 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
      */
     public ChatMulticastGUI() throws UnknownHostException {
         initComponents();
-        try {
-            textMsg.requestFocus();
-            
-            ip = new String(textIP.getText());
-            porta = new String(textPorta.getText());
-            group = InetAddress.getByName("239.255.255.255");
-            
-            mcSocket = new MulticastSocket(5678);
-            mcSocket.joinGroup(group);
-        } catch (IOException ex) {
-            Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        listener = new ListenerThread(this, mcSocket);
-        listener.start();
+        areaMsg.setEnabled(false);
+        textMsg.setEnabled(false);
+        btnEnviar.setEnabled(false);
+        btnSair.setEnabled(false);
     }
      public synchronized void exibeMsg(String msg){
 
@@ -118,6 +108,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         areaMsg.setEditable(false);
         areaMsg.setColumns(20);
         areaMsg.setRows(5);
+        areaMsg.setRequestFocusEnabled(false);
         jScrollPane1.setViewportView(areaMsg);
 
         textMsg.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -216,20 +207,47 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             mcSocket.leaveGroup(group);
             areaMsg.setEnabled(false);
             textMsg.setEnabled(false);
+            textApelido.setEditable(true);
+            textIP.setEditable(true);
+            textPorta.setEditable(true);
+            areaMsg.setText("");
+            listener.stop();
         } catch (IOException ex) {
             Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
+        //Exibicao dos campos
+        
+        areaMsg.setEnabled(true);
+        textMsg.setEnabled(true);
+        btnEnviar.setEnabled(true);
+        btnSair.setEnabled(true);
+        textApelido.setEditable(false);
+        textIP.setEditable(false);
+        textPorta.setEditable(false);
+        textMsg.setText("");
+        textMsg.requestFocus();
+        
+        
+        
         try {
+            textMsg.requestFocus();
+            
+            ip = new String(textIP.getText());
+            porta = Integer.parseInt(textPorta.getText().toString());
+            group = InetAddress.getByName(ip);
+            
+            mcSocket = new MulticastSocket(porta);
+            
+            //Entra no grupo do multicast
             mcSocket.joinGroup(group);
-            areaMsg.setEnabled(true);
-            textMsg.setEnabled(true);
         } catch (IOException ex) {
             Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Erro ao conectar novamente no servidor");
         }
+        listener = new ListenerThread(this, mcSocket);
+        listener.start();
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void textMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMsgKeyPressed
