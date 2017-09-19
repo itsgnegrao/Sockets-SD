@@ -9,7 +9,6 @@ import java.net.*;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 /**
  * Thread para receber mensagens multicast e exibir na GUI
  * @author itsgnegrao
@@ -26,24 +25,18 @@ public class ListenerThread extends Thread{
     
     @Override
     public void run(){
-        try {
-            this.sleep(10000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ListenerThread.class.getName()).log(Level.SEVERE, null, ex);
+        while (true) {
+            try {
+                byte[] buffer = new byte[1024];
+	
+                DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
+                mcSocket.receive(messageIn);
+                chatGUI.exibeMsg(new String(messageIn.getData()));
+                       
+            } catch (IOException ex) {
+                Logger.getLogger(ListenerThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        chatGUI.exibeMsg("testerson", "teste");
-        try {
-            this.sleep(10000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ListenerThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        chatGUI.exibeMsg("testerson2", "teste1");
-        try {
-            this.sleep(10000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ListenerThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        chatGUI.exibeMsg("testerson3", "teste2");
     }
     
 }

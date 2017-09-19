@@ -5,6 +5,8 @@
  */
 package MultcastIP;
 
+import java.awt.Color;
+import static java.awt.event.KeyEvent.*;
 import java.net.*;
 import java.io.*;
 import java.util.logging.Level;
@@ -33,7 +35,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             
             ip = new String(textIP.getText());
             porta = new String(textPorta.getText());
-            group = InetAddress.getByName("255.1.2.3");
+            group = InetAddress.getByName("239.255.255.255");
             
             mcSocket = new MulticastSocket(5678);
             mcSocket.joinGroup(group);
@@ -43,15 +45,23 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         listener = new ListenerThread(this, mcSocket);
         listener.start();
     }
+     public synchronized void exibeMsg(String msg){
+
+        areaMsg.append(msg);
+               
+        textMsg.setText("");
+        textMsg.requestFocus();
+     }
     
     public synchronized void exibeMsg(String apelido, String msg){
-        areaMsg.append("[ "+apelido+" ]: "+msg + "\n");
+        String msg_format = "[ "+apelido+" ]: "+msg + "\n";
+        //areaMsg.append(msg_format);
         
         // fazer o send com o socket
         
         try{
             /* cria um datagrama com a msg */
-            byte [] m = msg.getBytes();
+            byte [] m = msg_format.getBytes();
             DatagramPacket messageOut = new DatagramPacket(m, m.length, group, Integer.parseInt(textPorta.getText()));
             /* envia o datagrama como multicast */
             mcSocket.send(messageOut);	
@@ -66,6 +76,8 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         textMsg.setText("");
         textMsg.requestFocus();
     }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -86,6 +98,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         textMsg = new javax.swing.JTextField();
         btnEnviar = new javax.swing.JButton();
         btnSair = new javax.swing.JButton();
+        btnEntrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -97,7 +110,8 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
 
         textApelido.setText("Negrao");
 
-        textIP.setText("255.1.2.3");
+        textIP.setEditable(false);
+        textIP.setText("239.255.255.255");
 
         textPorta.setText("5678");
 
@@ -106,6 +120,12 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         areaMsg.setRows(5);
         jScrollPane1.setViewportView(areaMsg);
 
+        textMsg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textMsgKeyPressed(evt);
+            }
+        });
+
         btnEnviar.setText("ENVIAR");
         btnEnviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -113,10 +133,17 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             }
         });
 
-        btnSair.setText("SAIR GRUPO");
+        btnSair.setText("Sair Grupo");
         btnSair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSairActionPerformed(evt);
+            }
+        });
+
+        btnEntrar.setText("Entrar Grupo");
+        btnEntrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEntrarActionPerformed(evt);
             }
         });
 
@@ -127,26 +154,31 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(textApelido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(textIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(textPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(textMsg)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(btnEnviar)))
-                    .addComponent(btnSair))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(textMsg)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(textApelido, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(textIP, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(textPorta, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,8 +198,10 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
                     .addComponent(textMsg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEnviar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnSair)
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSair)
+                    .addComponent(btnEntrar))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -180,10 +214,29 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         try {
             mcSocket.leaveGroup(group);
+            areaMsg.setEnabled(false);
+            textMsg.setEnabled(false);
         } catch (IOException ex) {
             Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnSairActionPerformed
+
+    private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
+        try {
+            mcSocket.joinGroup(group);
+            areaMsg.setEnabled(true);
+            textMsg.setEnabled(true);
+        } catch (IOException ex) {
+            Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Erro ao conectar novamente no servidor");
+        }
+    }//GEN-LAST:event_btnEntrarActionPerformed
+
+    private void textMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMsgKeyPressed
+        if (evt.getKeyCode() == VK_ENTER){
+            btnEnviar.doClick();
+        }
+    }//GEN-LAST:event_textMsgKeyPressed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -223,6 +276,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaMsg;
+    private javax.swing.JButton btnEntrar;
     private javax.swing.JButton btnEnviar;
     private javax.swing.JButton btnSair;
     private javax.swing.JLabel jLabel1;
