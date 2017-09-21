@@ -11,6 +11,7 @@ import java.net.*;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextField;
 
 /**
  *
@@ -18,11 +19,10 @@ import java.util.logging.Logger;
  */
 public class ChatMulticastGUI extends javax.swing.JFrame {
 
-    private static MulticastSocket mcSocket;
-    private static InetAddress group;
-    private ListenerThread listener;
+    private static Socket socketCli;
     private static String ip;
     private static int porta;
+    private static TCPClient client;
     
     
     /**
@@ -35,36 +35,20 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         btnEnviar.setEnabled(false);
         btnSair.setEnabled(false);
     }
-     public synchronized void exibeMsg(String msg){
 
-        areaMsg.append(msg);
-               
+     public synchronized void exibeMsg(String msg){
+        areaMsg.append(msg);             
         textMsg.setText("");
         textMsg.requestFocus();
      }
     
-    public synchronized void exibeMsg(String apelido, String msg){
+    public synchronized String formatString(String apelido, String msg){
         String msg_format = "[ "+apelido+" ]: "+msg + "\n";
-        //areaMsg.append(msg_format);
-        
-        // fazer o send com o socket
-        
-        try{
-            /* cria um datagrama com a msg */
-            byte [] m = msg_format.getBytes();
-            DatagramPacket messageOut = new DatagramPacket(m, m.length, group, Integer.parseInt(textPorta.getText()));
-            /* envia o datagrama como multicast */
-            mcSocket.send(messageOut);	
-        }catch (SocketException e){
-                System.out.println("Socket: " + e.getMessage());
-        }catch (IOException e){
-                System.out.println("IO: " + e.getMessage());
-        }
-        
-        //fazer
-        
+       
         textMsg.setText("");
         textMsg.requestFocus();
+        
+        return msg_format;
     }
     
     
@@ -102,9 +86,14 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         textApelido.setText("Negrao");
 
         textIP.setEditable(false);
-        textIP.setText("239.255.255.255");
+        textIP.setText("127.0.0.1");
 
-        textPorta.setText("5678");
+        textPorta.setText("7896");
+        textPorta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textPortaActionPerformed(evt);
+            }
+        });
 
         areaMsg.setEditable(false);
         areaMsg.setColumns(20);
@@ -126,14 +115,14 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             }
         });
 
-        btnSair.setText("Sair Grupo");
+        btnSair.setText("Sair do Chat");
         btnSair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSairActionPerformed(evt);
             }
         });
 
-        btnEntrar.setText("Entrar Grupo");
+        btnEntrar.setText("Conectar ao Chat");
         btnEntrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEntrarActionPerformed(evt);
@@ -155,7 +144,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnEntrar, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnSair, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
@@ -201,20 +190,21 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        this.exibeMsg(textApelido.getText(),textMsg.getText());
+        client.EvniaMsg(formatString(textApelido.getText(),textMsg.getText()));
     }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         try {
-            mcSocket.leaveGroup(group);
+
             areaMsg.setEnabled(false);
             textMsg.setEnabled(false);
             textApelido.setEditable(true);
             textIP.setEditable(true);
             textPorta.setEditable(true);
             areaMsg.setText("");
-            listener.stop();
-        } catch (IOException ex) {
+
+            
+        } catch (Throwable ex) {
             Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnSairActionPerformed
@@ -232,24 +222,11 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         textMsg.setText("");
         textMsg.requestFocus();
         
+        ip = new String(textIP.getText());
+        porta = Integer.parseInt(textPorta.getText().toString());
+       
+        client = new TCPClient(this, ip, porta);
         
-        
-        try {
-            textMsg.requestFocus();
-            
-            ip = new String(textIP.getText());
-            porta = Integer.parseInt(textPorta.getText().toString());
-            group = InetAddress.getByName(ip);
-            
-            mcSocket = new MulticastSocket(porta);
-            
-            //Entra no grupo do multicast
-            mcSocket.joinGroup(group);
-        } catch (IOException ex) {
-            Logger.getLogger(ChatMulticastGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        listener = new ListenerThread(this, mcSocket);
-        listener.start();
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void textMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textMsgKeyPressed
@@ -257,6 +234,10 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             btnEnviar.doClick();
         }
     }//GEN-LAST:event_textMsgKeyPressed
+
+    private void textPortaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textPortaActionPerformed
+
+    }//GEN-LAST:event_textPortaActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

@@ -35,12 +35,12 @@
                   </Group>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="btnEntrar" min="-2" pref="124" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="btnEntrar" min="-2" pref="146" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="btnSair" min="-2" pref="106" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="textApelido" min="-2" pref="188" max="-2" attributes="0"/>
@@ -114,13 +114,16 @@
     <Component class="javax.swing.JTextField" name="textIP">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
-        <Property name="text" type="java.lang.String" value="239.255.255.255"/>
+        <Property name="text" type="java.lang.String" value="127.0.0.1"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="textPorta">
       <Properties>
-        <Property name="text" type="java.lang.String" value="5678"/>
+        <Property name="text" type="java.lang.String" value="7896"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="textPortaActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
       </AuxValues>
@@ -165,7 +168,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnSair">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Sair Grupo"/>
+        <Property name="text" type="java.lang.String" value="Sair do Chat"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSairActionPerformed"/>
@@ -173,7 +176,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnEntrar">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Entrar Grupo"/>
+        <Property name="text" type="java.lang.String" value="Conectar ao Chat"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEntrarActionPerformed"/>
