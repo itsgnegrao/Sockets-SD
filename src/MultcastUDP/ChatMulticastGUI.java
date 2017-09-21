@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MultcastIP;
+package MultcastUDP;
 
 import java.awt.Color;
 import static java.awt.event.KeyEvent.*;
@@ -91,6 +91,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         btnEntrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Chat Java Multicast");
 
         jLabel1.setText("IP:");
 
@@ -108,6 +109,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         areaMsg.setEditable(false);
         areaMsg.setColumns(20);
         areaMsg.setRows(5);
+        areaMsg.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mensagens", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         areaMsg.setRequestFocusEnabled(false);
         jScrollPane1.setViewportView(areaMsg);
 
