@@ -190,7 +190,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        client.EvniaMsg(formatString(textApelido.getText(),textMsg.getText()));
+        client.EnviaMsg(formatString(textApelido.getText(),textMsg.getText()));
     }//GEN-LAST:event_btnEnviarActionPerformed
 
     private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
@@ -202,6 +202,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
             textIP.setEditable(true);
             textPorta.setEditable(true);
             areaMsg.setText("");
+            client.EnviaMsg("SAIR");
 
             
         } catch (Throwable ex) {
