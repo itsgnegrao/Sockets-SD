@@ -41,6 +41,7 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         reserved.add("TIME");
         reserved.add("DATA");
         reserved.add("DOWN");
+        reserved.add("FILES");
     }
 
      public synchronized void exibeMsg(String msg){
@@ -48,12 +49,14 @@ public class ChatMulticastGUI extends javax.swing.JFrame {
         textMsg.setText("");
         textMsg.requestFocus();
      }
-    
+     
+ 
     public synchronized String formatString(String apelido, String msg, boolean flag){
         String msg_format;
         if(flag)  msg_format= "[ "+apelido+" ]: "+msg + "\n";
         else msg_format = "[ "+apelido+" ]: "+msg;
        
+        
         textMsg.setText("");
         textMsg.requestFocus();
         
